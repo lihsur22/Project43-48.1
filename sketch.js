@@ -3,9 +3,9 @@ const World= Matter.World;
 const Bodies = Matter.Bodies;
 const Constraint = Matter.Constraint;
 
-var bgImg, obsImg, heartImg;
-var miner, grund, ledge, s = [], t = [], b = [];
-var gameState, time = 0, energy;
+var bgImg, obsImg, heartImg, treImg;
+var miner, grund, ledge, s = [], t = [], b = [], c = [];
+var gameState, time = 0, energy, invinc = 0, score = 0;
 var stalling;
 var fallSnd;
 
@@ -13,6 +13,7 @@ function preload() {
   bgImg = loadImage("images/bg.png");
   obsImg = loadImage("images/wall.png");
   heartImg = loadImage("images/heart.png");
+  treImg = loadImage("images/treasure.png");
 
   soundFormats('ogg');
   fallSnd = loadSound("sounds/fall");
@@ -53,6 +54,7 @@ function draw() {
     text("Press LEFT ARROW to move backward", canvas.width/10,200);
     text("Press LEFT & RIGHT ARROW to glide", canvas.width/10,275);
     text("Gliding costs Energy", canvas.width/10,300);
+    text("250 Score = +1 Health", canvas.width/10,360);
 
     if(keyIsDown(83))
     {
@@ -92,55 +94,77 @@ function draw() {
       }
     }
 
+    console.log(miner.body1.y);
+		if(miner.body1.y > 500)
+		{
+			gameState = "";
+		}
+
 
 
     
     if(time < 25)
     {
       sumStal1(160, 4, 8);
+      sumCoin(140);
+      sumCoin(130);
     }
-    if(time >= 25 && time < 30)
-    {
-      sumStal1(0, 0, 0);
-    }
-    if(time >= 30 && time < 60)
-    {
-      sumStal1(120, 6, 8);
-    }
-    if(time >= 60 && time < 65)
+    else if(time >= 25 && time < 30)
     {
       sumStal1(0);
+      sumCoin(10);
     }
-    if(time >= 65 && time < 90)
+    else if(time >= 30 && time < 60)
+    {
+      sumStal1(120, 6, 8);
+      sumCoin(70);
+    }
+    else if(time >= 60 && time < 65)
+    {
+      sumStal1(0);
+      sumCoin(17);
+      sumCoin(13);
+    }
+    else if(time >= 65 && time < 90)
     {
       sumStal1(160, 2, 4);
       sumStal2(160, 2, 4);
     }
-    if(time >= 90 && time < 95)
+    else if(time >= 90 && time < 95)
     {
       sumStal1(0);
       sumStal2(0);
     }
-    if(time >= 95 && time < 120)
+    else if(time >= 95 && time < 120)
     {
       sumStal1(110, 2, 4);
       sumStal2(110, 2, 4);
     }
-    if(time >= 120 && time < 130)
+    else if(time >= 120 && time < 130)
     {
       sumStal1(0);
       sumStal2(0);
+    } else
+    {
+      sumCoin(0);
     }
 
 
 
     if((time >= 25 && time < 35))
     {
-      sumBoul(20,false);
       sumBoul(60,true);
+      sumBoul(4 * Math.round(random(2,5)),false);
     } else if((time >= 65 && time < 90))
     {
       sumBoul(60,false);
+    } else if((time >= 90 && time < 95))
+    {
+      sumBoul(10 * Math.round(random(2,7)),true);
+      sumBoul(30,false);
+    } else if(time >= 95 && time < 120)
+    {
+      sumBoul(30,false);
     } else
     {
       sumBoul(0);
@@ -149,26 +173,32 @@ function draw() {
 
 
 
-    if(s.length > 6)
+    if(s.length > 0)
     {
-      if(s[0].x == 40)
+      if(s[0].body.x < -10)
       {
         s.shift();
       }
     }
-
-    if(t.length > 6)
+    if(t.length > 0)
     {
-      if(t[0].x == 40)
+      if(t[0].body.x < -10)
       {
         t.shift();
       }
     }
-    if(b.length > 6)
+    if(b.length > 0)
     {
       if(b[0].body.y > 400)
       {
         b.shift();
+      }
+    }
+    if(c.length > 0)
+    {
+      if(c[0].body.y > 400)
+      {
+        c.shift();
       }
     }
 
@@ -180,7 +210,6 @@ function draw() {
     {
       energy += 1;
     }
-    console.log(stalling);
 
     textAlign(CENTER);
     textSize(40);
@@ -190,10 +219,31 @@ function draw() {
     text("Time : " + time, canvas.width/4,40);
     fill(255,0,0,51);
     text("Energy : " + Math.round(energy), canvas.width/4, 220);
+    fill(255,0,0);
+    textSize(14);
+    text("Score : " + score, miner.body1.x, miner.body1.y - 20);
+
+    if(invinc > 0)
+    {
+      invinc -= 1;
+    }
+
+    if(miner.health == 0)
+    {
+      gameState = "";
+    }
+
+    if(score >= 250)
+    {
+      score = 0;
+      miner.health += 1;
+    }
   }
 
   if(gameState == "")
   {
+    fallSnd.stop();
+    fallSnd.stop();
     fallSnd.stop();
   }
 }
@@ -207,7 +257,7 @@ function keyPressed() {
   }
   if(keyCode === 76)
   {
-    time = 25;
+    time = 90;
   }
 }
 
@@ -225,16 +275,18 @@ function sumStal1(a, MinH, MaxH) {
 
   for(var j = 0; j < t.length; j++){
     t[j].display();
-    if(isTouching(miner.body1,t[j].body))
+    if(isTouching(miner.body1,t[j].body) && miner.health != 0 && invinc == 0)
     {
-      gameState = "";
+      miner.health -= 1;
+      invinc = 60;
     }
   }
   for(var i = 0; i < s.length; i++){
     s[i].display();
-    if(isTouching(miner.body1,s[i].body))
+    if(isTouching(miner.body1,s[i].body) && miner.health != 0 && invinc == 0)
     {
-      gameState = "";
+      miner.health -= 1;
+      invinc = 60;
     }
   }
 }
@@ -253,16 +305,18 @@ function sumStal2(a, MinH, MaxH) {
 
   for(var j = 0; j < t.length; j++){
     t[j].display();
-    if(isTouching(miner.body1,t[j].body))
+    if(isTouching(miner.body1,t[j].body) && miner.health != 0 && invinc == 0)
     {
-      gameState = "";
+      miner.health -= 1;
+      invinc = 60;
     }
   }
   for(var i = 0; i < s.length; i++){
     s[i].display();
-    if(isTouching(miner.body1,s[i].body))
+    if(isTouching(miner.body1,s[i].body) && miner.health != 0 && invinc == 0)
     {
-      gameState = "";
+      miner.health -= 1;
+      invinc = 60;
     }
   }
 }
@@ -284,9 +338,28 @@ function sumBoul(a, followP) {
 
   for(var i = 0; i < b.length; i++){
     b[i].display();
-    if(isTouching(miner.body1,b[i].body))
+    if(isTouching(miner.body1,b[i].body) && miner.health != 0 && invinc == 0)
     {
-      gameState = "";
+      miner.health -= 1;
+      invinc = 60;
+    }
+  }
+}
+
+function sumCoin(a) {
+  if(frameCount % a == 0)
+  {
+    var ran1 = miner.body1.x + random(-100,150);
+    var ran2 = random(9,16);
+    c.push(new Treasure(ran1,ran2))
+  }
+  for(var i = 0; i < c.length; i++){
+    c[i].display();
+    if(isTouching(miner.body1,c[i].body))
+    {
+      c[0].body.destroy();
+      c.shift();
+      score += 25;
     }
   }
 }

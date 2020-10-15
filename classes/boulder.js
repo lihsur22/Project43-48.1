@@ -17,7 +17,8 @@ class Boulder {
         push();
 		translate(pos.x, pos.y);
 		rectMode(CENTER);
-		strokeWeight(3);
+        strokeWeight(3);
+        stroke("white");
 		fill("brown");
 		ellipse(0,0,this.r,this.r);
 		pop();
