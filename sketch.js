@@ -97,7 +97,7 @@ function draw() {
     console.log(miner.body1.y);
 		if(miner.body1.y > 500)
 		{
-			gameState = "";
+			gameState = "over";
 		}
 
 
@@ -129,23 +129,37 @@ function draw() {
     {
       sumStal1(160, 2, 4);
       sumStal2(160, 2, 4);
+      sumCoin(70);
     }
     else if(time >= 90 && time < 95)
     {
       sumStal1(0);
       sumStal2(0);
+      sumCoin(0);
     }
-    else if(time >= 95 && time < 120)
+    else if(time >= 95 && time < 125)
     {
       sumStal1(110, 2, 4);
       sumStal2(110, 2, 4);
+      sumCoin(25);
     }
-    else if(time >= 120 && time < 130)
+    else if(time >= 125 && time < 135)
     {
       sumStal1(0);
       sumStal2(0);
-    } else
+      sumCoin(0);
+    }
+    else if(time >= 135 && time < 200)
     {
+      sumStal1(160, 3, 3);
+      sumStal2(160, 3, 3);
+      sumStal3(80, 5, 5);
+      sumCoin(50);
+    }
+    else if(time >= 200 && time < 210)
+    {
+      sumStal1(0);
+      sumStal2(0);
       sumCoin(0);
     }
 
@@ -163,6 +177,13 @@ function draw() {
       sumBoul(10 * Math.round(random(2,7)),true);
       sumBoul(30,false);
     } else if(time >= 95 && time < 120)
+    {
+      sumBoul(30,false);
+    } else if(time >= 125 && time < 135)
+    {
+      sumBoul(30,false);
+      sumBoul(90,true);
+    } else if(time >= 170 && time < 200)
     {
       sumBoul(30,false);
     } else
@@ -230,7 +251,7 @@ function draw() {
 
     if(miner.health == 0)
     {
-      gameState = "";
+      gameState = "over";
     }
 
     if(score >= 250)
@@ -240,13 +261,44 @@ function draw() {
     }
   }
 
-  if(gameState == "")
+
+
+
+
+  if(gameState == "over")
   {
     fallSnd.stop();
     fallSnd.stop();
     fallSnd.stop();
+    miner = undefined;
+    s = [];
+    t = [];
+    b = [];
+    c = [];
+
+    textAlign(CENTER);
+    textSize(80);
+    stroke("black");
+    fill(165,42,42);
+    strokeWeight(5);
+    text("YOU LOST", canvas.width/4,canvas.height/4 - 20);
+    textSize(25);
+    text("Press 'R' to restart", canvas.width/4,canvas.height/4 + 50);
+    text("The time you survived for was : " + time, canvas.width/4,canvas.height/4 + 80);
+
+    if(keyIsDown(82))
+    {
+      gameState = "rest";
+      time = 0;
+      frameCount = 0;
+      score = 0;
+      invinc = 0;
+    }
   }
 }
+
+
+
 
 
 
@@ -257,7 +309,7 @@ function keyPressed() {
   }
   if(keyCode === 76)
   {
-    time = 90;
+    time = 125;
   }
 }
 
@@ -310,6 +362,27 @@ function sumStal2(a, MinH, MaxH) {
       miner.health -= 1;
       invinc = 60;
     }
+  }
+  for(var i = 0; i < s.length; i++){
+    s[i].display();
+    if(isTouching(miner.body1,s[i].body) && miner.health != 0 && invinc == 0)
+    {
+      miner.health -= 1;
+      invinc = 60;
+    }
+  }
+}
+
+function sumStal3(a, MinH, MaxH) {
+  if(frameCount % a == (3*a)/4)
+  {
+    var ran = Math.round(random(MinH,MaxH));
+    t.push(new StalTite(ran))
+  }
+  if((frameCount % a) == a/4)
+  {
+    var ran = Math.round(random(MinH,MaxH));
+    t.push(new StalTite(ran))
   }
   for(var i = 0; i < s.length; i++){
     s[i].display();
