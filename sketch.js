@@ -7,7 +7,7 @@ var bgImg, obsImg, heartImg, treImg;
 var miner, grund, ledge, s = [], t = [], b = [], c = [];
 var gameState, time = 0, energy, invinc = 0, score = 0;
 var stalling;
-var fallSnd;
+var fallSnd, coinColSnd, dmgSnd, startSnd, dieSnd, addLifeSnd, jumpSnd;
 
 function preload() {
   bgImg = loadImage("images/bg.png");
@@ -17,6 +17,12 @@ function preload() {
 
   soundFormats('ogg');
   fallSnd = loadSound("sounds/fall");
+  coinColSnd = loadSound("sounds/snd_save1");
+  dmgSnd = loadSound("sounds/snd_damage");
+  startSnd = loadSound("sounds/snd_buy");
+  dieSnd = loadSound("sounds/snd_die_splat");
+  addLifeSnd = loadSound("sounds/snd_levelup");
+  jumpSnd = loadSound("sounds/snd_bitget");
 }
 
 function setup() {
@@ -58,6 +64,7 @@ function draw() {
 
     if(keyIsDown(83))
     {
+      startSnd.play();
       gameState = "play";
       miner = new Mine(50,canvas.height/4);
     }
@@ -94,10 +101,11 @@ function draw() {
       }
     }
 
-    console.log(miner.body1.y);
+    //console.log(miner.body1.y);
 		if(miner.body1.y > 500)
 		{
-			gameState = "over";
+      gameState = "over";
+      dieSnd.play();
 		}
 
 
@@ -252,12 +260,14 @@ function draw() {
     if(miner.health == 0)
     {
       gameState = "over";
+      dieSnd.play();
     }
 
     if(score >= 250)
     {
       score = 0;
       miner.health += 1;
+      addLifeSnd.play();
     }
   }
 
@@ -305,7 +315,8 @@ function draw() {
 function keyPressed() {
   if(keyCode === UP_ARROW)
   {
-	  Matter.Body.applyForce(miner.body2,miner.body2.position,{x:0,y:-20});
+    Matter.Body.applyForce(miner.body2,miner.body2.position,{x:0,y:-20});
+    jumpSnd.play();
   }
   if(keyCode === 76)
   {
@@ -331,6 +342,7 @@ function sumStal1(a, MinH, MaxH) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
   for(var i = 0; i < s.length; i++){
@@ -339,6 +351,7 @@ function sumStal1(a, MinH, MaxH) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
 }
@@ -361,6 +374,7 @@ function sumStal2(a, MinH, MaxH) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
   for(var i = 0; i < s.length; i++){
@@ -369,6 +383,7 @@ function sumStal2(a, MinH, MaxH) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
 }
@@ -390,6 +405,7 @@ function sumStal3(a, MinH, MaxH) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
 }
@@ -415,6 +431,7 @@ function sumBoul(a, followP) {
     {
       miner.health -= 1;
       invinc = 60;
+      dmgSnd.play();
     }
   }
 }
@@ -433,6 +450,7 @@ function sumCoin(a) {
       c[0].body.destroy();
       c.shift();
       score += 25;
+      coinColSnd.play();
     }
   }
 }
