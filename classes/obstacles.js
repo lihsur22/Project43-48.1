@@ -1,9 +1,9 @@
 class StalMite {
-	constructor(h){
+	constructor(h, s){
 		this.height = h;
 		this.x = 40
 		this.body = createSprite(canvas.width/2 + 10,canvas.height/2 - h*(this.x/2),40,this.height * this.x);
-		this.body.velocityX = -5;
+		this.body.velocityX = s;
 		this.body.lifetime = canvas.width/10 + 20;
 		this.body.visible = false;
 	}
@@ -18,11 +18,11 @@ class StalMite {
 };
 
 class StalTite {
-	constructor(h){
+	constructor(h, s){
 		this.height = h;
 		this.x = 40
 		this.body = createSprite(canvas.width/2 + 10,(canvas.height + h*(this.x/2)) - canvas.height,40,this.height * this.x);
-		this.body.velocityX = -5;
+		this.body.velocityX = s;
 		this.body.lifetime = canvas.width/10 + 20;
 		this.body.visible = false;
 	}
