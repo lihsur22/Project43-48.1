@@ -170,6 +170,18 @@ function draw() {
       sumStal2(0);
       sumCoin(0);
     }
+    else if(time >= 210 && time < 270)
+    {
+      sumStal3(80, 4, 6);
+      sumStal4(160, 4, 6);
+      sumCoin(50);
+    }
+    else if(time >= 200 && time < 210)
+    {
+      sumStal3(0);
+      sumStal4(0);
+      sumCoin(0);
+    }
 
 
 
@@ -320,7 +332,7 @@ function keyPressed() {
   }
   if(keyCode === 76)
   {
-    time = 125;
+    time = 210;
   }
 }
 
@@ -328,12 +340,12 @@ function sumStal1(a, MinH, MaxH) {
   if(frameCount % a == 0)
   {
     var ran = Math.round(random(MinH,MaxH));
-    s.push(new StalMite(ran))
+    s.push(new StalMite(ran,-5))
   }
   if((frameCount % a) == a/2)
   {
     var ran = Math.round(random(MinH,MaxH));
-    t.push(new StalTite(ran))
+    t.push(new StalTite(ran,-5))
   }
 
   for(var j = 0; j < t.length; j++){
@@ -360,12 +372,12 @@ function sumStal2(a, MinH, MaxH) {
   if(frameCount % a == 0)
   {
     var ran = Math.round(random(MinH,MaxH));
-    t.push(new StalTite(ran))
+    t.push(new StalTite(ran,-5))
   }
   if((frameCount % a) == a/2)
   {
     var ran = Math.round(random(MinH,MaxH));
-    s.push(new StalMite(ran))
+    s.push(new StalMite(ran,-5))
   }
 
   for(var j = 0; j < t.length; j++){
@@ -392,12 +404,34 @@ function sumStal3(a, MinH, MaxH) {
   if(frameCount % a == (3*a)/4)
   {
     var ran = Math.round(random(MinH,MaxH));
-    t.push(new StalTite(ran))
+    t.push(new StalTite(ran,-5))
   }
   if((frameCount % a) == a/4)
   {
     var ran = Math.round(random(MinH,MaxH));
-    t.push(new StalTite(ran))
+    t.push(new StalTite(ran,-5))
+  }
+  for(var i = 0; i < t.length; i++){
+    t[i].display();
+    if(isTouching(miner.body1,t[i].body) && miner.health != 0 && invinc == 0)
+    {
+      miner.health -= 1;
+      invinc = 60;
+      dmgSnd.play();
+    }
+  }
+}
+
+function sumStal4(a, MinH, MaxH) {
+  if(frameCount % a == a)
+  {
+    var ran = Math.round(random(MinH,MaxH));
+    s.push(new StalMite(ran,-15))
+  }
+  if((frameCount % a) == a/2)
+  {
+    var ran = Math.round(random(MinH,MaxH));
+    s.push(new StalMite(ran,-15))
   }
   for(var i = 0; i < s.length; i++){
     s[i].display();
