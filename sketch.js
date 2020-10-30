@@ -176,7 +176,7 @@ function draw() {
       sumStal4(160, 4, 6);
       sumCoin(50);
     }
-    else if(time >= 200 && time < 210)
+    else if(time >= 270 && time < 280)
     {
       sumStal3(0);
       sumStal4(0);
